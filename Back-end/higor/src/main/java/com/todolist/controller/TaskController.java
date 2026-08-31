@@ -1,6 +1,8 @@
 package com.todolist.controller;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;  
 import com.sun.net.httpserver.HttpExchange;
@@ -38,7 +40,31 @@ public class TaskController implements HttpHandler {
         if (method.equals("POST")){
 
             if(path.equals("/tasks")){
-                path = "tasks.html";
+                
+                String body = new String(
+                    exchange.getRequestBody().readAllBytes(),
+                     StandardCharsets.UTF_8
+                );
+
+                 String label = URLDecoder.decode(
+                body.substring(body.indexOf("=") + 1),
+                StandardCharsets.UTF_8
+            );
+
+            System.out.println("Tarefa recebida: " + label);
+
+            String resposta = "Tarefa recebida com sucesso!";
+
+            exchange.sendResponseHeaders(
+                200,
+                resposta.getBytes(StandardCharsets.UTF_8).length
+            );
+
+            exchange.getResponseBody().write(
+                resposta.getBytes(StandardCharsets.UTF_8)
+            );
+
+            exchange.getResponseBody().close();
             }
 
             

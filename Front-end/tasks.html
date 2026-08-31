@@ -343,101 +343,26 @@
 
     <h1>Minhas tarefas</h1>
     <p class="subtitle">Marque o que já foi feito e siga em frente.</p>
+    
+    <form class="new-task" method="POST" action="/tasks">
 
-    <form class="new-task" id="newTaskForm">
-      <input type="text" id="newTaskInput" placeholder="Adicionar uma nova tarefa..." autocomplete="off">
-      <button type="submit" aria-label="Adicionar tarefa">+</button>
-    </form>
+    <input
+        type="text"
+        name="label"
+        placeholder="Adicionar uma nova tarefa..."
+        autocomplete="off"
+        required
+    >
 
-    <ul class="task-list" id="taskList"></ul>
+    <button type="submit" aria-label="Adicionar tarefa">
+        +
+    </button>
 
-    <p class="empty-state" id="emptyState">Nenhuma tarefa por aqui. Adicione a primeira acima.</p>
-
-    <p class="footer-stats" id="footerStats"></p>
-  </main>
+</form>
 
   <a href="/" class="fab-back" aria-label="Voltar para a página inicial">
     <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></svg>
     <span class="label">Início</span>
   </a>
-
-  <script>
-    // Estado das tarefas — mantido em memória durante a sessão.
-    let tasks = [
-      { id: 1, label: "Revisar relatório semanal", done: false },
-      { id: 2, label: "Responder e-mails pendentes", done: false },
-      { id: 3, label: "Organizar arquivos do projeto", done: true },
-      { id: 4, label: "Agendar reunião com a equipe", done: false },
-      { id: 5, label: "Atualizar planilha de gastos", done: true },
-    ];
-    let nextId = tasks.length + 1;
-
-    const listEl = document.getElementById('taskList');
-    const emptyEl = document.getElementById('emptyState');
-    const statsEl = document.getElementById('footerStats');
-    const form = document.getElementById('newTaskForm');
-    const input = document.getElementById('newTaskInput');
-
-    const checkIcon = '<svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>';
-
-    function render(){
-      listEl.innerHTML = '';
-
-      tasks.forEach(task => {
-        const li = document.createElement('li');
-        li.className = 'task' + (task.done ? ' done' : '');
-
-        const check = document.createElement('button');
-        check.type = 'button';
-        check.className = 'task-check';
-        check.setAttribute('aria-pressed', String(task.done));
-        check.setAttribute('aria-label', task.done ? 'Marcar como não feita' : 'Marcar como feita');
-        check.innerHTML = checkIcon;
-        check.addEventListener('click', () => {
-          task.done = !task.done;
-          render();
-        });
-
-        const label = document.createElement('span');
-        label.className = 'task-label';
-        label.textContent = task.label;
-
-        const remove = document.createElement('button');
-        remove.type = 'button';
-        remove.className = 'task-remove';
-        remove.setAttribute('aria-label', 'Remover tarefa');
-        remove.textContent = '×';
-        remove.addEventListener('click', () => {
-          tasks = tasks.filter(t => t.id !== task.id);
-          render();
-        });
-
-        li.appendChild(check);
-        li.appendChild(label);
-        li.appendChild(remove);
-        listEl.appendChild(li);
-      });
-
-      emptyEl.classList.toggle('visible', tasks.length === 0);
-
-      const done = tasks.filter(t => t.done).length;
-      const pending = tasks.length - done;
-      statsEl.textContent = tasks.length
-        ? `${pending} pendente${pending === 1 ? '' : 's'} · ${done} concluída${done === 1 ? '' : 's'}`
-        : '';
-    }
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const value = input.value.trim();
-      if (!value) return;
-      tasks.push({ id: nextId++, label: value, done: false });
-      input.value = '';
-      render();
-    });
-
-    render();
-  </script>
-
 </body>
 </html>
