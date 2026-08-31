@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minhas Tarefas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #1B1F3B;
+    --bg-deep: #12152B;
+    --surface: #242850;
+    --surface-2: #2E3364;
+    --amber: #F5A623;
+    --amber-soft: #FFD08A;
+    --mint: #6FCF97;
+    --text: #F3F1EA;
+    --text-muted: #9296B8;
+    --line: rgba(243,241,234,0.10);
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin: 0;
+    height: 100%;
+  }
+
+  body{
+    font-family: 'Inter', sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(245,166,35,0.10), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(111,207,151,0.08), transparent 45%),
+      linear-gradient(180deg, var(--bg-deep), var(--bg));
+    color: var(--text);
+    min-height: 100vh;
+    padding: 32px;
+  }
+
+  .page{
+    width: 100%;
+    max-width: 460px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 40px 36px 36px;
+    box-shadow: 0 30px 60px -25px rgba(0,0,0,0.55);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page::before{
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--amber), var(--mint));
+  }
+
+  .tab{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 22px;
+  }
+
+  .tab span.dot{
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--mint);
+    box-shadow: 0 0 0 4px rgba(111,207,151,0.15);
+  }
+
+  h1{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 1.15;
+    margin: 0 0 6px;
+  }
+
+  .subtitle{
+    margin: 0 0 26px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* Nova tarefa */
+  .new-task{
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .new-task input{
+    flex: 1;
+    background: var(--bg-deep);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+  }
+
+  .new-task input::placeholder{
+    color: var(--text-muted);
+  }
+
+  .new-task input:focus-visible,
+  .new-task button:focus-visible{
+    outline: 2px solid var(--amber-soft);
+    outline-offset: 2px;
+  }
+
+  .new-task button{
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, var(--amber), #E08E1A);
+    color: #22190A;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .new-task button:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -10px rgba(245,166,35,0.6);
+  }
+
+  /* Lista de tarefas */
+  .task-list{
+    list-style: none;
+    margin: 0 0 8px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .task{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--bg-deep);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+    transition: border-color 0.15s ease, opacity 0.15s ease;
+  }
+
+  .task:hover{
+    border-color: rgba(243,241,234,0.22);
+  }
+
+  .task-check{
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+    border: 2px solid var(--amber-soft);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .task-check svg{
+    width: 14px;
+    height: 14px;
+  }
+
+  .task-check path{
+    fill: none;
+    stroke: var(--bg-deep);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 20;
+    stroke-dashoffset: 20;
+    transition: stroke-dashoffset 0.2s ease;
+  }
+
+  .task.done .task-check{
+    background: var(--mint);
+    border-color: var(--mint);
+  }
+
+  .task.done .task-check path{
+    stroke-dashoffset: 0;
+  }
+
+  .task-label{
+    flex: 1;
+    font-size: 14.5px;
+    color: var(--text);
+  }
+
+  .task.done .task-label{
+    color: var(--text-muted);
+    text-decoration: line-through;
+    text-decoration-color: rgba(146,150,184,0.6);
+  }
+
+  .task-remove{
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    opacity: 0;
+    transition: opacity 0.15s ease, color 0.15s ease;
+  }
+
+  .task:hover .task-remove{
+    opacity: 1;
+  }
+
+  .task-remove:hover{
+    color: var(--amber);
+  }
+
+  .task-remove:focus-visible{
+    outline: 2px solid var(--amber-soft);
+    outline-offset: 2px;
+    opacity: 1;
+  }
+
+  .empty-state{
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13.5px;
+    padding: 28px 10px;
+    border: 1px dashed var(--line);
+    border-radius: 14px;
+    display: none;
+  }
+
+  .empty-state.visible{
+    display: block;
+  }
+
+  .footer-stats{
+    margin-top: 18px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  .footer-stats strong{
+    color: var(--mint);
+    font-weight: 600;
+  }
+
+  /* Botão flutuante — voltar para o início */
+  .fab-back{
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 13px 20px 13px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 16px 30px -14px rgba(0,0,0,0.6);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  }
+
+  .fab-back svg{
+    width: 18px;
+    height: 18px;
+  }
+
+  .fab-back path{
+    fill: none;
+    stroke: var(--amber-soft);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .fab-back:hover{
+    transform: translateY(-2px);
+    background: var(--surface);
+    box-shadow: 0 18px 32px -14px rgba(0,0,0,0.7);
+  }
+
+  .fab-back:focus-visible{
+    outline: 2px solid var(--amber-soft);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .task-check path{ transition: none; }
+    .new-task button, .fab-back{ transition: none; }
+  }
+
+  @media (max-width: 480px){
+    body{ padding: 20px 16px 100px; }
+    .page{ padding: 30px 22px 26px; }
+    h1{ font-size: 24px; }
+    .fab-back{
+      right: 16px;
+      bottom: 16px;
+      padding: 12px 16px 12px 14px;
+    }
+    .fab-back span.label{ display: none; }
+  }
+</style>
+</head>
+<body>
+
+  <main class="page">
+    <div class="tab"><span class="dot"></span>Painel de tarefas</div>
+
+    <h1>Minhas tarefas</h1>
+    <p class="subtitle">Marque o que já foi feito e siga em frente.</p>
+
+    <form class="new-task" id="newTaskForm">
+      <input type="text" id="newTaskInput" placeholder="Adicionar uma nova tarefa..." autocomplete="off">
+      <button type="submit" aria-label="Adicionar tarefa">+</button>
+    </form>
+
+    <ul class="task-list" id="taskList"></ul>
+
+    <p class="empty-state" id="emptyState">Nenhuma tarefa por aqui. Adicione a primeira acima.</p>
+
+    <p class="footer-stats" id="footerStats"></p>
+  </main>
+
+  <a href="/" class="fab-back" aria-label="Voltar para a página inicial">
+    <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></svg>
+    <span class="label">Início</span>
+  </a>
+
+  <script>
+    // Estado das tarefas — mantido em memória durante a sessão.
+    let tasks = [
+      { id: 1, label: "Revisar relatório semanal", done: false },
+      { id: 2, label: "Responder e-mails pendentes", done: false },
+      { id: 3, label: "Organizar arquivos do projeto", done: true },
+      { id: 4, label: "Agendar reunião com a equipe", done: false },
+      { id: 5, label: "Atualizar planilha de gastos", done: true },
+    ];
+    let nextId = tasks.length + 1;
+
+    const listEl = document.getElementById('taskList');
+    const emptyEl = document.getElementById('emptyState');
+    const statsEl = document.getElementById('footerStats');
+    const form = document.getElementById('newTaskForm');
+    const input = document.getElementById('newTaskInput');
+
+    const checkIcon = '<svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>';
+
+    function render(){
+      listEl.innerHTML = '';
+
+      tasks.forEach(task => {
+        const li = document.createElement('li');
+        li.className = 'task' + (task.done ? ' done' : '');
+
+        const check = document.createElement('button');
+        check.type = 'button';
+        check.className = 'task-check';
+        check.setAttribute('aria-pressed', String(task.done));
+        check.setAttribute('aria-label', task.done ? 'Marcar como não feita' : 'Marcar como feita');
+        check.innerHTML = checkIcon;
+        check.addEventListener('click', () => {
+          task.done = !task.done;
+          render();
+        });
+
+        const label = document.createElement('span');
+        label.className = 'task-label';
+        label.textContent = task.label;
+
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'task-remove';
+        remove.setAttribute('aria-label', 'Remover tarefa');
+        remove.textContent = '×';
+        remove.addEventListener('click', () => {
+          tasks = tasks.filter(t => t.id !== task.id);
+          render();
+        });
+
+        li.appendChild(check);
+        li.appendChild(label);
+        li.appendChild(remove);
+        listEl.appendChild(li);
+      });
+
+      emptyEl.classList.toggle('visible', tasks.length === 0);
+
+      const done = tasks.filter(t => t.done).length;
+      const pending = tasks.length - done;
+      statsEl.textContent = tasks.length
+        ? `${pending} pendente${pending === 1 ? '' : 's'} · ${done} concluída${done === 1 ? '' : 's'}`
+        : '';
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const value = input.value.trim();
+      if (!value) return;
+      tasks.push({ id: nextId++, label: value, done: false });
+      input.value = '';
+      render();
+    });
+
+    render();
+  </script>
+
+</body>
+</html>
