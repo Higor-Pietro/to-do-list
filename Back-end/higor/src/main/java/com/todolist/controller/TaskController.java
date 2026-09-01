@@ -4,9 +4,13 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;  
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import com.todolist.dto.TaskDTO;
 
 public class TaskController implements HttpHandler {
 
@@ -37,45 +41,70 @@ public class TaskController implements HttpHandler {
             exchange.getResponseBody().close();
         } 
 
-        if (method.equals("POST")){
+         if (method.equals("POST")) {
 
-            if(path.equals("/tasks")){
-                
+            if (path.equals("/tasks")) {
+
                 String body = new String(
                     exchange.getRequestBody().readAllBytes(),
-                     StandardCharsets.UTF_8
+                    StandardCharsets.UTF_8
                 );
 
-                 String label = URLDecoder.decode(
-                body.substring(body.indexOf("=") + 1),
+                Map<String, String> data = parseFormData(body);
+
+                String nome = data.get("name");
+                String descricao = data.get("description");
+              
+
+                TaskDTO task = new TaskDTO(
+                    nome,
+                    descricao,
+                    false
+                );
+
+                System.out.println("Nome: " + task.nome());
+                System.out.println("Descrição: " + task.descricao());
+               
+
+                String resposta = "Tarefa recebida com sucesso!";
+
+                byte[] respostaBytes =
+                    resposta.getBytes(StandardCharsets.UTF_8);
+
+                exchange.sendResponseHeaders(
+                    200,
+                    respostaBytes.length
+                );
+
+                exchange.getResponseBody().write(respostaBytes);
+                exchange.getResponseBody().close();
+            }
+        }
+    }
+
+    private Map<String, String> parseFormData(String body) {
+
+        Map<String, String> data = new HashMap<>();
+
+        String[] fields = body.split("&");
+
+        for (String field : fields) {
+
+            String[] keyValue = field.split("=", 2);
+
+            String key = URLDecoder.decode(
+                keyValue[0],
                 StandardCharsets.UTF_8
             );
 
-            System.out.println("Tarefa recebida: " + label);
-
-            String resposta = "Tarefa recebida com sucesso!";
-
-            exchange.sendResponseHeaders(
-                200,
-                resposta.getBytes(StandardCharsets.UTF_8).length
+            String value = URLDecoder.decode(
+                keyValue[1],
+                StandardCharsets.UTF_8
             );
 
-            exchange.getResponseBody().write(
-                resposta.getBytes(StandardCharsets.UTF_8)
-            );
-
-            exchange.getResponseBody().close();
-            }
-
-            
-
-
-
+            data.put(key, value);
         }
 
-
-
-
+        return data;
     }
-
 }

@@ -343,16 +343,22 @@
 
     <h1>Minhas tarefas</h1>
     <p class="subtitle">Marque o que já foi feito e siga em frente.</p>
-    
+
     <form class="new-task" method="POST" action="/tasks">
 
     <input
         type="text"
-        name="label"
-        placeholder="Adicionar uma nova tarefa..."
+        name="name"
+        placeholder="Nome da tarefa..."
         autocomplete="off"
         required
     >
+
+    <textarea
+        name="description"
+        placeholder="Descrição da tarefa..."
+        required
+    ></textarea>
 
     <button type="submit" aria-label="Adicionar tarefa">
         +
