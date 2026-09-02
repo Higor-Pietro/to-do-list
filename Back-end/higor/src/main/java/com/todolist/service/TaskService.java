@@ -10,6 +10,7 @@ public class TaskService {
 
     public void criarTarefa(TaskDTO task) {
         
-       taskRepository.salvarTask(task); 
+       taskRepository.salvarTask(task);
+       System.out.println("Tarefa salva!: " + task.nome() ); 
     }
 }
