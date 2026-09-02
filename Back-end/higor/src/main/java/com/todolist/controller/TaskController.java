@@ -11,9 +11,11 @@ import java.util.Map;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.todolist.dto.TaskDTO;
+import com.todolist.service.TaskService;
 
 public class TaskController implements HttpHandler {
 
+    private final TaskService taskService = new TaskService();
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -62,8 +64,7 @@ public class TaskController implements HttpHandler {
                     false
                 );
 
-                System.out.println("Nome: " + task.nome());
-                System.out.println("Descrição: " + task.descricao());
+                taskService.criarTarefa(task);
                
 
                 String resposta = "Tarefa recebida com sucesso!";
