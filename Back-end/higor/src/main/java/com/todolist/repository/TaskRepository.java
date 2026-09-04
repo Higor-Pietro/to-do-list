@@ -45,7 +45,25 @@ public class TaskRepository {
 
     }
 
-    public void excluirTask(){
+    public void excluirTask(TaskDTO task){
+
+        String sql = "DELETE FROM tasks WHERE nome = ?;";
+
+         try (Connection connection = ConnectionFactory.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+                System.out.println("Conexão Feita");
+
+            statement.setString(1, task.nome());
+            
+
+            statement.executeUpdate();
+
+            System.out.println("Tarefa adicionada em DataBase");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 
