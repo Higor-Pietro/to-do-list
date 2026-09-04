@@ -20,6 +20,6 @@ public class Main {
 
         server.start();
 
-        System.out.println("Servidor rodando em http://localhost:8080");
+        System.out.println("Servidor rodando");
     }
 }

@@ -14,6 +14,9 @@ public class MainController implements HttpHandler {
        String method = exchange.getRequestMethod();
        String path = exchange.getRequestURI().getPath();
 
+       System.out.println("Diretório atual: " + Path.of("").toAbsolutePath());
+        System.out.println("Arquivo procurado: " + Path.of("Front-end" + path).toAbsolutePath());
+
        if (method.equals("GET")){
             if (path.equals("/")) {
                 path = "/index.html";

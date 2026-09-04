@@ -10,10 +10,14 @@ public class TaskRepository {
 
     public void salvarTask(TaskDTO task){
 
+    
+        System.out.println("#CONECTADO AO DB");
         String sql = "INSERT INTO tasks (nome, descricao, feito) VALUES (?, ?, ?)";
 
          try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
+
+                System.out.println("Conexão Feita");
 
             statement.setString(1, task.nome());
             statement.setString(2, task.descricao());
@@ -21,12 +25,15 @@ public class TaskRepository {
 
             statement.executeUpdate();
 
+            System.out.println("Tarefa adicionada em DataBase");
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void MarcarTask(){
+
 
     }
 

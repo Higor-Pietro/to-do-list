@@ -7,13 +7,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.todolist.dto.TaskDTO;
 import com.todolist.service.TaskService;
 
-public class TaskController implements HttpHandler {
+public class TaskController implements HttpHandler  {
 
     private final TaskService taskService = new TaskService();
 
