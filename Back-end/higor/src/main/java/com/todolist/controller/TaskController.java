@@ -44,42 +44,51 @@ public class TaskController implements HttpHandler  {
 
          if (method.equals("POST")) {
 
-            if (path.equals("/tasks")) {
+    if (path.equals("/tasks")) {
 
-                String body = new String(
-                    exchange.getRequestBody().readAllBytes(),
-                    StandardCharsets.UTF_8
-                );
+        String body = new String(
+            exchange.getRequestBody().readAllBytes(),
+            StandardCharsets.UTF_8
+        );
 
-                Map<String, String> data = parseFormData(body);
+        Map<String, String> data = parseFormData(body);
 
-                String nome = data.get("name");
-                String descricao = data.get("description");
-              
+        String nome = data.get("name");
+        String descricao = data.get("description");
 
-                TaskDTO task = new TaskDTO(
-                    nome,
-                    descricao,
-                    false
-                );
+        TaskDTO task = new TaskDTO(
+            nome,
+            descricao,
+            false
+        );
 
-                taskService.criarTarefa(task);
-               
+        taskService.criarTarefa(task);
 
-                String resposta = "Tarefa recebida com sucesso!";
-
-                byte[] respostaBytes =
-                    resposta.getBytes(StandardCharsets.UTF_8);
-
-                exchange.sendResponseHeaders(
-                    200,
-                    respostaBytes.length
-                );
-
-                exchange.getResponseBody().write(respostaBytes);
-                exchange.getResponseBody().close();
+        String resposta = """
+            {
+                "nome": "%s",
+                "descricao": "%s",
+                "feito": false
             }
-        }
+            """.formatted(nome, descricao);
+
+        byte[] respostaBytes =
+            resposta.getBytes(StandardCharsets.UTF_8);
+
+        exchange.getResponseHeaders().set(
+            "Content-Type",
+            "application/json; charset=UTF-8"
+        );
+
+        exchange.sendResponseHeaders(
+            200,
+            respostaBytes.length
+        );
+
+        exchange.getResponseBody().write(respostaBytes);
+        exchange.getResponseBody().close();
+    }
+}
     }
 
     private Map<String, String> parseFormData(String body) {

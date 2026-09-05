@@ -2,7 +2,11 @@ package com.todolist.repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.todolist.database.ConnectionFactory;
 import com.todolist.dto.TaskDTO;
 
@@ -77,22 +81,33 @@ public class TaskRepository {
 
     }
 
-    public void ListarTask(TaskDTO task){
+    public List<TaskDTO> listarTarefas() {
 
-        String sql = "select t.nome, t.descricao from tasks t";
+    List<TaskDTO> tarefas = new ArrayList<>();
 
-         try (Connection connection = ConnectionFactory.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+    String sql = "SELECT t.nome, t.descricao,t.feito  FROM tasks t";
 
-            statement.executeUpdate();
+    try (Connection connection = ConnectionFactory.getConnection();
+         PreparedStatement statement = connection.prepareStatement(sql);
+         ResultSet result = statement.executeQuery()) {
 
-            System.out.println("Tarefa adicionada em DataBase");
+        while (result.next()) {
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+            TaskDTO task = new TaskDTO(
+                result.getString("nome"),
+                result.getString("descricao"),
+                result.getBoolean("feito")
+            );
+
+            tarefas.add(task);
         }
 
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+
+    return tarefas;
+}
 
     public void excluirTask(TaskDTO task){
 

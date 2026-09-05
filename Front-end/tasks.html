@@ -1,12 +1,22 @@
+```html
 <!DOCTYPE html>
+
 <html lang="pt-BR">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Minhas Tarefas</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
+
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
+
   :root{
     --bg: #1B1F3B;
     --bg-deep: #12152B;
@@ -20,7 +30,9 @@
     --line: rgba(243,241,234,0.10);
   }
 
-  *{ box-sizing: border-box; }
+  *{
+    box-sizing: border-box;
+  }
 
   html, body{
     margin: 0;
@@ -54,7 +66,9 @@
   .page::before{
     content: "";
     position: absolute;
-    top: 0; left: 0; right: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 6px;
     background: linear-gradient(90deg, var(--amber), var(--mint));
   }
@@ -93,14 +107,17 @@
   }
 
   /* Nova tarefa */
+
   .new-task{
     display: flex;
+    flex-direction: column;
     gap: 10px;
     margin-bottom: 24px;
   }
 
-  .new-task input{
-    flex: 1;
+  .new-task input,
+  .new-task textarea{
+    width: 100%;
     background: var(--bg-deep);
     border: 1px solid var(--line);
     border-radius: 12px;
@@ -108,13 +125,20 @@
     color: var(--text);
     font-family: 'Inter', sans-serif;
     font-size: 14px;
+    resize: vertical;
   }
 
-  .new-task input::placeholder{
+  .new-task textarea{
+    min-height: 90px;
+  }
+
+  .new-task input::placeholder,
+  .new-task textarea::placeholder{
     color: var(--text-muted);
   }
 
   .new-task input:focus-visible,
+  .new-task textarea:focus-visible,
   .new-task button:focus-visible{
     outline: 2px solid var(--amber-soft);
     outline-offset: 2px;
@@ -135,6 +159,7 @@
     align-items: center;
     justify-content: center;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
+    align-self: flex-end;
   }
 
   .new-task button:hover{
@@ -143,6 +168,7 @@
   }
 
   /* Lista de tarefas */
+
   .task-list{
     list-style: none;
     margin: 0 0 8px;
@@ -154,7 +180,7 @@
 
   .task{
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 14px;
     background: var(--bg-deep);
     border: 1px solid var(--line);
@@ -179,23 +205,8 @@
     align-items: center;
     justify-content: center;
     padding: 0;
-    transition: background 0.15s ease, border-color 0.15s ease;
-  }
-
-  .task-check svg{
-    width: 14px;
-    height: 14px;
-  }
-
-  .task-check path{
-    fill: none;
-    stroke: var(--bg-deep);
-    stroke-width: 4;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-dasharray: 20;
-    stroke-dashoffset: 20;
-    transition: stroke-dashoffset 0.2s ease;
+    color: var(--bg-deep);
+    font-size: 14px;
   }
 
   .task.done .task-check{
@@ -203,20 +214,29 @@
     border-color: var(--mint);
   }
 
-  .task.done .task-check path{
-    stroke-dashoffset: 0;
-  }
-
   .task-label{
     flex: 1;
     font-size: 14.5px;
     color: var(--text);
+    word-break: break-word;
   }
 
-  .task.done .task-label{
+  .task-label strong{
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+
+  .task-description{
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .task.done .task-label strong,
+  .task.done .task-description{
     color: var(--text-muted);
     text-decoration: line-through;
-    text-decoration-color: rgba(146,150,184,0.6);
   }
 
   .task-remove{
@@ -274,6 +294,7 @@
   }
 
   /* Botão flutuante — voltar para o início */
+
   .fab-back{
     position: fixed;
     right: 24px;
@@ -319,56 +340,199 @@
   }
 
   @media (prefers-reduced-motion: reduce){
-    .task-check path{ transition: none; }
-    .new-task button, .fab-back{ transition: none; }
+    .new-task button,
+    .fab-back{
+      transition: none;
+    }
   }
 
   @media (max-width: 480px){
-    body{ padding: 20px 16px 100px; }
-    .page{ padding: 30px 22px 26px; }
-    h1{ font-size: 24px; }
+
+    body{
+      padding: 20px 16px 100px;
+    }
+
+    .page{
+      padding: 30px 22px 26px;
+    }
+
+    h1{
+      font-size: 24px;
+    }
+
     .fab-back{
       right: 16px;
       bottom: 16px;
       padding: 12px 16px 12px 14px;
     }
-    .fab-back span.label{ display: none; }
+
+    .fab-back span.label{
+      display: none;
+    }
   }
+
 </style>
+
 </head>
+
 <body>
 
   <main class="page">
-    <div class="tab"><span class="dot"></span>Painel de tarefas</div>
+
+    <div class="tab">
+      <span class="dot"></span>
+      Painel de tarefas
+    </div>
 
     <h1>Minhas tarefas</h1>
-    <p class="subtitle">Marque o que já foi feito e siga em frente.</p>
 
-    <form class="new-task" method="POST" action="/tasks">
+    <p class="subtitle">
+      Marque o que já foi feito e siga em frente.
+    </p>
 
-    <input
+    <form class="new-task" id="taskForm">
+
+      <input
         type="text"
         name="name"
         placeholder="Nome da tarefa..."
         autocomplete="off"
         required
-    >
+      >
 
-    <textarea
+      <textarea
         name="description"
         placeholder="Descrição da tarefa..."
         required
-    ></textarea>
+      ></textarea>
 
-    <button type="submit" aria-label="Adicionar tarefa">
+      <button type="submit" aria-label="Adicionar tarefa">
         +
-    </button>
+      </button>
 
-</form>
+    </form>
 
-  <a href="/" class="fab-back" aria-label="Voltar para a página inicial">
-    <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></svg>
+    <!-- As tarefas salvas aparecerão aqui -->
+
+    <ul class="task-list" id="taskList"></ul>
+
+  </main>
+
+  <a
+    href="/"
+    class="fab-back"
+    aria-label="Voltar para a página inicial"
+  >
+
+    <svg viewBox="0 0 24 24">
+      <path d="M15 18l-6-6 6-6"></path>
+    </svg>
+
     <span class="label">Início</span>
+
   </a>
+
+
+  <script>
+
+    const form = document.getElementById("taskForm");
+    const taskList = document.getElementById("taskList");
+
+
+    form.addEventListener("submit", async function(event) {
+
+      // Impede o navegador de recarregar/trocar de página
+      event.preventDefault();
+
+
+      // Pega os dados do formulário
+      const formData = new FormData(form);
+
+
+      try {
+
+        // Envia os dados para o Controller
+        const response = await fetch("/tasks", {
+
+          method: "POST",
+
+          body: new URLSearchParams(formData)
+
+        });
+
+
+        // Verifica se o servidor respondeu corretamente
+        if (!response.ok) {
+
+          throw new Error("Erro ao salvar tarefa.");
+
+        }
+
+
+        // Recebe o JSON enviado pelo Controller
+        const task = await response.json();
+
+
+        // Cria o elemento <li> da tarefa
+        const li = document.createElement("li");
+
+        li.classList.add("task");
+
+
+        // Cria a estrutura visual da tarefa
+        li.innerHTML = `
+
+          <button
+            class="task-check"
+            type="button"
+            aria-label="Marcar tarefa como concluída"
+          >
+            ✓
+          </button>
+
+          <div class="task-label">
+
+            <strong>${task.nome}</strong>
+
+            <div class="task-description">
+              ${task.descricao}
+            </div>
+
+          </div>
+
+          <button
+            class="task-remove"
+            type="button"
+            aria-label="Remover tarefa"
+          >
+            ×
+          </button>
+
+        `;
+
+
+        // Coloca a tarefa na lista
+        taskList.appendChild(li);
+
+
+        // Limpa os campos do formulário
+        form.reset();
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert("Não foi possível salvar a tarefa.");
+
+      }
+
+    });
+
+
+  </script>
+
 </body>
+
 </html>
+```
