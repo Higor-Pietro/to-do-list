@@ -125,6 +125,37 @@ public class TaskController implements HttpHandler {
                 exchange.getResponseBody().close();
             }
         }
+
+        // DELETE
+        if (method.equals("DELETE")) {
+
+            if (path.equals("/tasks")) {
+
+                String body = new String(
+                    exchange.getRequestBody().readAllBytes(),
+                    StandardCharsets.UTF_8
+                );
+
+                Map<String, String> data = parseFormData(body);
+
+                String nome = data.get("name");
+
+                TaskDTO task = new TaskDTO(
+                    nome,
+                    "",
+                    false
+                );
+
+                taskService.excluirTarefa(task);
+
+                exchange.sendResponseHeaders(
+                    204,
+                    -1
+                );
+
+                exchange.getResponseBody().close();
+            }
+        }
     }
 
     private Map<String, String> parseFormData(String body) {

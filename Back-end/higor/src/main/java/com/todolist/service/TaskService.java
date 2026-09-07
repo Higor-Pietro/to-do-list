@@ -14,4 +14,8 @@ public class TaskService {
     public void alternarStatus(TaskDTO task) {
         taskRepository.MarcarTask(task);
     }
+
+    public void excluirTarefa(TaskDTO task) {
+    taskRepository.excluirTask(task);
+}
 }
