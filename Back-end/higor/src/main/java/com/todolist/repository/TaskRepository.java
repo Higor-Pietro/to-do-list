@@ -38,48 +38,21 @@ public class TaskRepository {
 
     public void MarcarTask(TaskDTO task){
 
-        String sql = "UPDATE tasks SET feito = 1 WHERE nome = ?";
+         String sql = "UPDATE tasks SET feito = NOT feito WHERE nome = ?";
 
-         try (Connection connection = ConnectionFactory.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+    try (
+        Connection connection = ConnectionFactory.getConnection();
+        PreparedStatement statement = connection.prepareStatement(sql)
+    ) {
 
-                System.out.println("Conexão Feita");
+        statement.setString(1, task.nome());
 
-            statement.setString(1, task.nome());
-            
+        statement.executeUpdate();
 
-            statement.executeUpdate();
-
-            System.out.println("Tarefa adicionada em DataBase");
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
-
-    public void desmarcarTask(TaskDTO task){
-
-        String sql = "UPDATE tasks SET feito = 0 WHERE nome = ?";
-
-         try (Connection connection = ConnectionFactory.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-                System.out.println("Conexão Feita");
-
-            statement.setString(1, task.nome());
-          
-
-            statement.executeUpdate();
-
-            System.out.println("Tarefa adicionada em DataBase");
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-    }
+}
 
     public List<TaskDTO> listarTarefas() {
 

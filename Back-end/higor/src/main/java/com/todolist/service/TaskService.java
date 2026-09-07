@@ -5,17 +5,13 @@ import com.todolist.repository.TaskRepository;
 
 public class TaskService {
 
-     private final TaskRepository taskRepository = new TaskRepository();
+    private final TaskRepository taskRepository = new TaskRepository();
 
     public void criarTarefa(TaskDTO task) {
-        
-      
-      System.out.println("Entrou Service");
+        taskRepository.salvarTask(task);
+    }
 
-       taskRepository.salvarTask(task);
-       
-       System.out.println("Tarefa salva!: " + task.nome() + 
-       " /Descrição: " + task.descricao() + 
-       " /Feito: " + task.feito()); 
+    public void alternarStatus(TaskDTO task) {
+        taskRepository.MarcarTask(task);
     }
 }

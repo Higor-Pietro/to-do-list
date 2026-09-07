@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 
 <html lang="pt-BR">
@@ -106,8 +105,6 @@
     font-size: 14px;
   }
 
-  /* Nova tarefa */
-
   .new-task{
     display: flex;
     flex-direction: column;
@@ -166,8 +163,6 @@
     transform: translateY(-2px);
     box-shadow: 0 10px 20px -10px rgba(245,166,35,0.6);
   }
-
-  /* Lista de tarefas */
 
   .task-list{
     list-style: none;
@@ -293,8 +288,6 @@
     font-weight: 600;
   }
 
-  /* Botão flutuante — voltar para o início */
-
   .fab-back{
     position: fixed;
     right: 24px;
@@ -412,8 +405,6 @@
 
     </form>
 
-    <!-- As tarefas salvas aparecerão aqui -->
-
     <ul class="task-list" id="taskList"></ul>
 
   </main>
@@ -432,107 +423,124 @@
 
   </a>
 
-
   <script>
 
     const form = document.getElementById("taskForm");
     const taskList = document.getElementById("taskList");
 
+    function criarTarefa(task) {
 
-    form.addEventListener("submit", async function(event) {
+      const li = document.createElement("li");
 
-      // Impede o navegador de recarregar/trocar de página
-      event.preventDefault();
+      li.classList.add("task");
 
+      if (task.feito) {
+        li.classList.add("done");
+      }
 
-      // Pega os dados do formulário
-      const formData = new FormData(form);
+      li.innerHTML = `
+        <button
+          class="task-check"
+          type="button"
+          aria-label="${task.feito ? "Desmarcar tarefa" : "Marcar tarefa como concluída"}"
+        >
+          ✓
+        </button>
 
+        <div class="task-label">
+          <strong>${task.nome}</strong>
 
-      try {
+          <div class="task-description">
+            ${task.descricao}
+          </div>
+        </div>
 
-        // Envia os dados para o Controller
-        const response = await fetch("/tasks", {
+        <button
+          class="task-remove"
+          type="button"
+          aria-label="Remover tarefa"
+        >
+          ×
+        </button>
+      `;
 
-          method: "POST",
+      const checkButton = li.querySelector(".task-check");
 
-          body: new URLSearchParams(formData)
+      checkButton.addEventListener("click", async function() {
 
-        });
+        try {
 
+          const response = await fetch("/tasks/status", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+              name: task.nome
+            })
+          });
 
-        // Verifica se o servidor respondeu corretamente
-        if (!response.ok) {
+          if (!response.ok) {
+            throw new Error("Erro ao alterar status da tarefa.");
+          }
 
-          throw new Error("Erro ao salvar tarefa.");
+          task.feito = !task.feito;
+
+          li.classList.toggle("done", task.feito);
+
+          checkButton.setAttribute(
+            "aria-label",
+            task.feito
+              ? "Desmarcar tarefa"
+              : "Marcar tarefa como concluída"
+          );
+
+        } catch (error) {
+
+          console.error(error);
+          alert("Não foi possível alterar o status da tarefa.");
 
         }
 
+      });
 
-        // Recebe o JSON enviado pelo Controller
+      taskList.appendChild(li);
+    }
+
+    form.addEventListener("submit", async function(event) {
+
+      event.preventDefault();
+
+      const formData = new FormData(form);
+
+      try {
+
+        const response = await fetch("/tasks", {
+          method: "POST",
+          body: new URLSearchParams(formData)
+        });
+
+        if (!response.ok) {
+          throw new Error("Erro ao salvar tarefa.");
+        }
+
         const task = await response.json();
 
+        criarTarefa(task);
 
-        // Cria o elemento <li> da tarefa
-        const li = document.createElement("li");
-
-        li.classList.add("task");
-
-
-        // Cria a estrutura visual da tarefa
-        li.innerHTML = `
-
-          <button
-            class="task-check"
-            type="button"
-            aria-label="Marcar tarefa como concluída"
-          >
-            ✓
-          </button>
-
-          <div class="task-label">
-
-            <strong>${task.nome}</strong>
-
-            <div class="task-description">
-              ${task.descricao}
-            </div>
-
-          </div>
-
-          <button
-            class="task-remove"
-            type="button"
-            aria-label="Remover tarefa"
-          >
-            ×
-          </button>
-
-        `;
-
-
-        // Coloca a tarefa na lista
-        taskList.appendChild(li);
-
-
-        // Limpa os campos do formulário
         form.reset();
-
 
       } catch (error) {
 
         console.error(error);
-
         alert("Não foi possível salvar a tarefa.");
 
       }
 
     });
 
-
   </script>
 
 </body>
 
 </html>
-```
