@@ -465,6 +465,7 @@
       `;
 
       const checkButton = li.querySelector(".task-check");
+      const removeButton = li.querySelector(".task-remove");
 
       checkButton.addEventListener("click", async function() {
 
@@ -499,6 +500,35 @@
 
           console.error(error);
           alert("Não foi possível alterar o status da tarefa.");
+
+        }
+
+      });
+
+      removeButton.addEventListener("click", async function() {
+
+        try {
+
+          const response = await fetch("/tasks", {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+              name: task.nome
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error("Erro ao excluir tarefa.");
+          }
+
+          li.remove();
+
+        } catch (error) {
+
+          console.error(error);
+          alert("Não foi possível excluir a tarefa.");
 
         }
 
