@@ -54,15 +54,16 @@ public class TaskRepository {
     }
 }
 
-    public List<TaskDTO> listarTarefas() {
-
+   public List<TaskDTO> listarTarefas() {
     List<TaskDTO> tarefas = new ArrayList<>();
 
-    String sql = "SELECT t.nome, t.descricao,t.feito  FROM tasks t";
+    String sql = "SELECT t.nome, t.descricao, t.feito FROM tasks t";
 
-    try (Connection connection = ConnectionFactory.getConnection();
-         PreparedStatement statement = connection.prepareStatement(sql);
-         ResultSet result = statement.executeQuery()) {
+    try (
+        Connection connection = ConnectionFactory.getConnection();
+        PreparedStatement statement = connection.prepareStatement(sql);
+        ResultSet result = statement.executeQuery()
+    ) {
 
         while (result.next()) {
 

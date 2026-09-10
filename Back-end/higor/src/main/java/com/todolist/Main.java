@@ -15,9 +15,8 @@ public class Main {
         );
 
         server.createContext("/", new MainController());
-
+        server.createContext("/tasks.html", new MainController());
         server.createContext("/tasks", new TaskController());
-
         server.start();
 
         System.out.println("Servidor rodando");

@@ -1,5 +1,7 @@
 package com.todolist.service;
 
+import java.util.List;
+
 import com.todolist.dto.TaskDTO;
 import com.todolist.repository.TaskRepository;
 
@@ -16,6 +18,10 @@ public class TaskService {
     }
 
     public void excluirTarefa(TaskDTO task) {
-    taskRepository.excluirTask(task);
-}
+        taskRepository.excluirTask(task);
+    }
+
+    public List<TaskDTO> listarTarefas() {
+        return taskRepository.listarTarefas();
+    }
 }

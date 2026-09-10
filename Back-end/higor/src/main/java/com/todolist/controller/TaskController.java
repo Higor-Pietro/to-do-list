@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -23,35 +24,59 @@ public class TaskController implements HttpHandler {
         String path = exchange.getRequestURI().getPath();
         String method = exchange.getRequestMethod();
 
-        // GET
         if (method.equals("GET")) {
 
             if (path.equals("/tasks")) {
-                path = "/tasks.html";
+
+                List<TaskDTO> tarefas = taskService.listarTarefas();
+
+                StringBuilder resposta = new StringBuilder("[");
+                
+                for (int i = 0; i < tarefas.size(); i++) {
+
+                    TaskDTO task = tarefas.get(i);
+
+                    resposta.append("""
+                        {
+                            "nome": "%s",
+                            "descricao": "%s",
+                            "feito": %s
+                        }
+                        """.formatted(
+                            escapeJson(task.nome()),
+                            escapeJson(task.descricao()),
+                            task.feito()
+                        ));
+
+                    if (i < tarefas.size() - 1) {
+                        resposta.append(",");
+                    }
+                }
+
+                resposta.append("]");
+
+                byte[] respostaBytes =
+                    resposta.toString().getBytes(StandardCharsets.UTF_8);
+
+                exchange.getResponseHeaders().set(
+                    "Content-Type",
+                    "application/json; charset=UTF-8"
+                );
+
+                exchange.sendResponseHeaders(
+                    200,
+                    respostaBytes.length
+                );
+
+                exchange.getResponseBody().write(respostaBytes);
+                exchange.getResponseBody().close();
+
+                return;
             }
-
-            Path arquivo = Path.of("Front-end" + path);
-
-            byte[] conteudo = Files.readAllBytes(arquivo);
-
-            exchange.getResponseHeaders().set(
-                "Content-Type",
-                "text/html; charset=UTF-8"
-            );
-
-            exchange.sendResponseHeaders(
-                200,
-                conteudo.length
-            );
-
-            exchange.getResponseBody().write(conteudo);
-            exchange.getResponseBody().close();
         }
 
-        // POST
         if (method.equals("POST")) {
 
-            // Criar tarefa
             if (path.equals("/tasks")) {
 
                 String body = new String(
@@ -78,7 +103,10 @@ public class TaskController implements HttpHandler {
                         "descricao": "%s",
                         "feito": false
                     }
-                    """.formatted(nome, descricao);
+                    """.formatted(
+                        escapeJson(nome),
+                        escapeJson(descricao)
+                    );
 
                 byte[] respostaBytes =
                     resposta.getBytes(StandardCharsets.UTF_8);
@@ -95,9 +123,10 @@ public class TaskController implements HttpHandler {
 
                 exchange.getResponseBody().write(respostaBytes);
                 exchange.getResponseBody().close();
+
+                return;
             }
 
-            // Marcar / desmarcar tarefa
             if (path.equals("/tasks/status")) {
 
                 String body = new String(
@@ -123,10 +152,11 @@ public class TaskController implements HttpHandler {
                 );
 
                 exchange.getResponseBody().close();
+
+                return;
             }
         }
 
-        // DELETE
         if (method.equals("DELETE")) {
 
             if (path.equals("/tasks")) {
@@ -154,19 +184,32 @@ public class TaskController implements HttpHandler {
                 );
 
                 exchange.getResponseBody().close();
+
+                return;
             }
         }
+
+        exchange.sendResponseHeaders(404, -1);
+        exchange.getResponseBody().close();
     }
 
     private Map<String, String> parseFormData(String body) {
 
         Map<String, String> data = new HashMap<>();
 
+        if (body == null || body.isEmpty()) {
+            return data;
+        }
+
         String[] fields = body.split("&");
 
         for (String field : fields) {
 
             String[] keyValue = field.split("=", 2);
+
+            if (keyValue.length < 2) {
+                continue;
+            }
 
             String key = URLDecoder.decode(
                 keyValue[0],
@@ -182,5 +225,18 @@ public class TaskController implements HttpHandler {
         }
 
         return data;
+    }
+
+    private String escapeJson(String value) {
+
+        if (value == null) {
+            return "";
+        }
+
+        return value
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .replace("\n", "\\n")
+            .replace("\r", "\\r");
     }
 }
