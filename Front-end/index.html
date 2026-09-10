@@ -1,11 +1,19 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Painel — Minhas Tarefas</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
+
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
   :root{
     --bg: #1B1F3B;
@@ -20,7 +28,9 @@
     --line: rgba(243,241,234,0.10);
   }
 
-  *{ box-sizing: border-box; }
+  *{
+    box-sizing: border-box;
+  }
 
   html, body{
     margin: 0;
@@ -56,7 +66,9 @@
   .dashboard::before{
     content: "";
     position: absolute;
-    top: 0; left: 0; right: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 6px;
     background: linear-gradient(90deg, var(--amber), var(--mint));
   }
@@ -117,7 +129,9 @@
   }
 
   @keyframes risca{
-    to{ stroke-dashoffset: 0; }
+    to{
+      stroke-dashoffset: 0;
+    }
   }
 
   h1{
@@ -160,8 +174,13 @@
     color: var(--text-muted);
   }
 
-  .stat.pendentes strong{ color: var(--amber); }
-  .stat.feitas strong{ color: var(--mint); }
+  .stat.pendentes strong{
+    color: var(--amber);
+  }
+
+  .stat.feitas strong{
+    color: var(--mint);
+  }
 
   .actions{
     display: flex;
@@ -213,49 +232,126 @@
   }
 
   @media (prefers-reduced-motion: reduce){
-    .checkbox path{ animation: none; stroke-dashoffset: 0; }
-    button{ transition: none; }
+    .checkbox path{
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+
+    button{
+      transition: none;
+    }
   }
 
   @media (max-width: 480px){
-    .dashboard{ padding: 32px 24px 28px; }
-    h1{ font-size: 26px; }
+    .dashboard{
+      padding: 32px 24px 28px;
+    }
+
+    h1{
+      font-size: 26px;
+    }
   }
 </style>
+
 </head>
+
 <body>
 
   <main class="dashboard">
-    <div class="tab"><span class="dot"></span>Painel de tarefas</div>
+
+    <div class="tab">
+      <span class="dot"></span>
+      Painel de tarefas
+    </div>
 
     <div class="hero">
+
       <div class="checkbox">
-        <svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>
+        <svg viewBox="0 0 24 24">
+          <path d="M4 12l5 5L20 6"></path>
+        </svg>
       </div>
+
       <div>
         <h1>Olá, vamos organizar seu dia?</h1>
         <p>Suas tarefas de hoje estão te esperando.</p>
       </div>
+
     </div>
 
     <div class="stats">
+
       <div class="stat pendentes">
-        <strong>5</strong>
+        <strong id="pending-count">0</strong>
         <span>pendentes</span>
       </div>
+
       <div class="stat feitas">
-        <strong>3</strong>
+        <strong id="completed-count">0</strong>
         <span>concluídas</span>
       </div>
+
     </div>
 
     <div class="actions">
+
       <a href="/tasks.html">
-      <button class="btn-primary" type="button">Ver tarefas</button>
+        <button class="btn-primary" type="button">
+          Ver tarefas
+        </button>
       </a>
-      <button class="btn-secondary" type="button">Sair</button>
+
+      <button class="btn-secondary" type="button">
+        Sair
+      </button>
+
     </div>
+
   </main>
 
+  <script>
+
+    async function atualizarContadores() {
+
+      try {
+
+        const response = await fetch("/tasks");
+
+        if (!response.ok) {
+          throw new Error("Erro ao buscar tarefas");
+        }
+
+        const tarefas = await response.json();
+
+        let pendentes = 0;
+        let concluidas = 0;
+
+        tarefas.forEach(tarefa => {
+
+          if (tarefa.feito) {
+            concluidas++;
+          } else {
+            pendentes++;
+          }
+
+        });
+
+        document.getElementById("pending-count").textContent = pendentes;
+
+        document.getElementById("completed-count").textContent = concluidas;
+
+      } catch (error) {
+
+        console.error("Erro ao atualizar contadores:", error);
+
+      }
+
+    }
+
+    atualizarContadores();
+
+  </script>
+
 </body>
+
 </html>
