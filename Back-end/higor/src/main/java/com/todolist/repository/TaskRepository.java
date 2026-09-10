@@ -15,7 +15,7 @@ public class TaskRepository {
     public void salvarTask(TaskDTO task){
 
     
-        System.out.println("#CONECTADO AO DB");
+        
         String sql = "INSERT INTO tasks (nome, descricao, feito) VALUES (?, ?, ?)";
 
          try (Connection connection = ConnectionFactory.getConnection();
